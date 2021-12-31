@@ -7,12 +7,16 @@ import auth from '@react-native-firebase/auth';
 import CustomButton from '../components/CustomButton';
 import CustomInput from '../components/CustomInput';
 import {DARK1, LIGHT, RED} from '../utils/colors';
+import {useAppDispatch, useAppSelector} from '../redux/store';
+import {startLoading, stopLoading} from '../redux/authSlice';
 
 export interface LoginProps {}
 
 const Login = (props: LoginProps) => {
   const [username, setUsername] = useState('user1@example.com');
   const [password, setPassword] = useState('retailpulse');
+  const {loading} = useAppSelector(s => s.auth);
+  const dispatch = useAppDispatch();
 
   const onLogin = () => {
     if (!username || !password) {
@@ -23,10 +27,12 @@ const Login = (props: LoginProps) => {
       return;
     }
 
+    dispatch(startLoading());
     auth()
       .signInWithEmailAndPassword(username, password)
       .catch(err => {
         console.log(err);
+        dispatch(stopLoading());
         Snackbar.show({
           text: 'Invalid email/ pass',
           backgroundColor: RED,
@@ -57,6 +63,7 @@ const Login = (props: LoginProps) => {
         label="LOGIN"
         mainStyle={styles.loginButton}
         onPress={onLogin}
+        disabled={loading}
       />
     </View>
   );

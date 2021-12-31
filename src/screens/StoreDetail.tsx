@@ -3,12 +3,12 @@ import React, {useRef, useState} from 'react';
 import {View, Text, StyleSheet, Image} from 'react-native';
 import {RNCamera, TakePictureResponse} from 'react-native-camera';
 import Snackbar from 'react-native-snackbar';
+import {useNetInfo} from '@react-native-community/netinfo';
 
 import CustomButton from '../components/CustomButton';
 import {StackParams} from '../navigators/MainNavigator';
 import {DARK1, LIGHT, RED} from '../utils/colors';
-import {useNetInfo} from '@react-native-community/netinfo';
-import {useAppDispatch} from '../redux/store';
+import {useAppDispatch, useAppSelector} from '../redux/store';
 import {addQueue} from '../redux/uploadSlice';
 
 export interface StoreDetailProps {}
@@ -18,6 +18,7 @@ const StoreDetail = (props: StoreDetailProps) => {
   const {isConnected} = useNetInfo();
   const isFocus = useIsFocused();
   const dispatch = useAppDispatch();
+  const {isUploading} = useAppSelector(s => s.upload);
 
   const cameraRef = useRef<RNCamera>(null);
   const [img, setImg] = useState<TakePictureResponse>(null);
@@ -49,6 +50,7 @@ const StoreDetail = (props: StoreDetailProps) => {
 
     setImg?.(null);
     if (!isConnected) Snackbar.show({text: 'Device Offline, Upload queued'});
+    else if (isUploading) Snackbar.show({text: 'Upload queued'});
 
     dispatch(
       addQueue({

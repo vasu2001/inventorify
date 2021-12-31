@@ -15,13 +15,19 @@ export interface CustomButtonProps {
   mainStyle?: ViewStyle;
   label: String;
   onPress: () => void;
+  disabled?: boolean;
 }
 
-const CustomButton = ({mainStyle, label, onPress}: CustomButtonProps) => {
+const CustomButton = ({
+  mainStyle,
+  label,
+  onPress,
+  disabled,
+}: CustomButtonProps) => {
   const pressableStyle: (
     state: PressableStateCallbackType,
   ) => StyleProp<ViewStyle> = ({pressed}) => ({
-    backgroundColor: pressed ? DARK2 : ACCENT,
+    backgroundColor: disabled || pressed ? DARK2 : ACCENT,
     borderRadius: 20,
     paddingHorizontal: 30,
     paddingVertical: 10,
@@ -29,7 +35,7 @@ const CustomButton = ({mainStyle, label, onPress}: CustomButtonProps) => {
 
   return (
     <View style={mainStyle}>
-      <Pressable style={pressableStyle} onPress={onPress}>
+      <Pressable style={pressableStyle} onPress={onPress} disabled={disabled}>
         <Text style={[styles.label]}>{label}</Text>
       </Pressable>
     </View>

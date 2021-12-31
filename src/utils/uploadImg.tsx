@@ -4,13 +4,14 @@ import database from '@react-native-firebase/database';
 import uuid from 'react-native-uuid';
 
 import {ACCENT, RED} from './colors';
+import {UploadQueue} from '../redux/uploadSlice';
 
 // helper func to upload image in the background
-export const uploadHelper = async (
-  storeUid: string,
-  imgUri: string,
-  timestamp: string,
-) => {
+export const uploadHelper = async ({
+  storeUid,
+  imgUri,
+  timestamp,
+}: UploadQueue) => {
   try {
     Snackbar.show({text: 'Started Upload'});
 

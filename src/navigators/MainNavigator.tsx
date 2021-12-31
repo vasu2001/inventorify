@@ -18,7 +18,7 @@ import {loadStores} from '../redux/storesSlice';
 import Snackbar from 'react-native-snackbar';
 import {RED} from '../utils/colors';
 import {uploadHelper} from '../utils/uploadImg';
-import {popQueue} from '../redux/uploadSlice';
+import {popQueue, startUpload, stopUpload} from '../redux/uploadSlice';
 
 export interface MainProps {}
 
@@ -34,7 +34,7 @@ export type MainNavigationProp = NativeStackNavigationProp<StackParams>;
 const Main = (props: MainProps) => {
   const authState = useAppSelector(s => s.auth);
   const dispatch = useAppDispatch();
-  const {queue: uploadQueue} = useAppSelector(s => s.upload);
+  const {queue: uploadQueue, isUploading} = useAppSelector(s => s.upload);
   const {isConnected} = useNetInfo();
 
   const loadDataonLogin = async (user: FirebaseAuthTypes.User) => {
@@ -60,7 +60,7 @@ const Main = (props: MainProps) => {
       // console.log(storesData[0]);
 
       dispatch(loadStores(storesData));
-      dispatch(login({uid: user.uid, data: userData}));
+      dispatch(login({uid: user.uid, data: userData, loading: false}));
     } catch (err) {
       console.log(err);
 
@@ -72,6 +72,7 @@ const Main = (props: MainProps) => {
     }
   };
 
+  // listener on auth state
   useEffect(() => {
     const subsriber = auth().onAuthStateChanged(user => {
       if (user) loadDataonLogin(user);
@@ -79,16 +80,15 @@ const Main = (props: MainProps) => {
     return subsriber;
   }, []);
 
-  // listener on queue, will start the upload ASAP
+  // listener on queue to start the upload ASAP
   useEffect(() => {
-    if (isConnected && uploadQueue.length > 0) {
-      uploadHelper(
-        uploadQueue[0].storeUid,
-        uploadQueue[0].imgUri,
-        uploadQueue[0].timestamp,
-      ).then(() => dispatch(popQueue()));
+    if (isConnected && uploadQueue.length > 0 && !isUploading) {
+      dispatch(startUpload());
+      uploadHelper(uploadQueue[0])
+        .then(() => dispatch(popQueue()))
+        .finally(() => dispatch(stopUpload()));
     }
-  }, [uploadQueue, isConnected]);
+  }, [uploadQueue, isConnected, isUploading]);
 
   return authState.uid ? (
     <Stack.Navigator screenOptions={{headerShown: false}}>
