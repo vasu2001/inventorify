@@ -8,14 +8,14 @@ import CustomButton from '../components/CustomButton';
 import CustomInput from '../components/CustomInput';
 import {DARK1, LIGHT, RED} from '../utils/colors';
 import {useAppDispatch, useAppSelector} from '../redux/store';
-import {startLoading, stopLoading} from '../redux/authSlice';
+import {startLoading, stopLoading} from '../redux/flagSlice';
 
 export interface LoginProps {}
 
 const Login = (props: LoginProps) => {
   const [username, setUsername] = useState('user1@example.com');
   const [password, setPassword] = useState('retailpulse');
-  const {loading} = useAppSelector(s => s.auth);
+  const {loading} = useAppSelector(s => s.flag);
   const dispatch = useAppDispatch();
 
   const onLogin = () => {

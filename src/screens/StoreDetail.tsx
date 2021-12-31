@@ -18,7 +18,7 @@ const StoreDetail = (props: StoreDetailProps) => {
   const {isConnected} = useNetInfo();
   const isFocus = useIsFocused();
   const dispatch = useAppDispatch();
-  const {isUploading} = useAppSelector(s => s.upload);
+  const {isUploading} = useAppSelector(s => s.flag);
 
   const cameraRef = useRef<RNCamera>(null);
   const [img, setImg] = useState<TakePictureResponse>(null);

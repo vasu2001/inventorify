@@ -8,23 +8,28 @@ import {
   PERSIST,
   PURGE,
   REGISTER,
+  PersistConfig,
 } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import authReducer from './authSlice';
 import storesReducer from './storesSlice';
 import uploadReducer from './uploadSlice';
+import flagReducer from './flagSlice';
 
 const rootReducer = combineReducers({
   auth: authReducer,
   stores: storesReducer,
   upload: uploadReducer,
+  // flag reducer for non persistent status flags
+  flag: flagReducer,
 });
 
-const persistConfig = {
+const persistConfig: PersistConfig<RootState> = {
   key: 'root',
   version: 1,
   storage: AsyncStorage,
+  blacklist: ['flag'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
